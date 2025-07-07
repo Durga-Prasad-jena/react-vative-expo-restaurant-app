@@ -46,9 +46,10 @@ export default function Index() {
               or
               <View className="border-b-2 border-[#f49b33] p-2 mb-1 w-24 " />
             </Text>
-            <TouchableOpacity 
-            onPress={()=>router.push("/signin")}
-            className="flex flex-row items-center">
+            <TouchableOpacity
+              onPress={() => router.push("/signin")}
+              className="flex flex-row items-center"
+            >
               <Text className="font-semibold text-white ">
                 Already have a user?
               </Text>
@@ -59,7 +60,11 @@ export default function Index() {
           </View>
         </View>
         <View className="flex-1 mt-80">
-          <Image  source={Frame} resizeMode="contain" className="h-full w-full"/>
+          <Image
+            source={Frame}
+            resizeMode="contain"
+            className="h-full w-full"
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

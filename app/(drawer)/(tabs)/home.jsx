@@ -1,4 +1,6 @@
-import { useEffect } from "react";
+import { router } from "expo-router";
+import { collection, getDocs, query } from "firebase/firestore";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -11,19 +13,34 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import dinetimelogo from "../../../assets/images/dinetimelogo.png";
 import homeBanner from "../../../assets/images/homeBanner.png";
-import { uploadData } from "../../../config/bulkupload";
-import { restaurants } from "../../../store/restaurants";
+import { db } from "../../../config/firebaseConfig";
 
 const Home = () => {
-  console.log("restaurants", restaurants);
+  const [restaurantData, setREstaurantData] = useState([]);
 
-  useEffect(()=>{
-    uploadData()
-  },[])
+  const getRestaurants = async () => {
+    try {
+      const q = query(collection(db, "restaurants"));
+      const res = await getDocs(q);
+
+      res.forEach((item) => {
+        setREstaurantData((prev) => [...prev, item.data()]);
+      });
+    } catch (error) {
+      console.log("error as when fetch restaurants data", error);
+    }
+  };
+
+  useEffect(() => {
+    getRestaurants();
+  }, []);
 
   const renderItem = ({ item }) => {
     return (
-      <TouchableOpacity className="bg-[#5f5f5f] max-h-64 max-w-xs flex justify-center rounded-lg p-4 mx-4 shadow-md">
+      <TouchableOpacity
+        onPress={() => router.push(`/restaurant/${item.name}`)}
+        className="bg-[#5f5f5f] max-h-64 max-w-xs flex justify-center rounded-lg p-4 mx-4 shadow-md"
+      >
         <Image
           source={{ uri: item.image }}
           className="h-28 mt-3 mb-1 rounded-lg"
@@ -39,7 +56,7 @@ const Home = () => {
     );
   };
   return (
-    <SafeAreaView className="bg-[#2b2b2b]">
+    <SafeAreaView className="bg-[#2b2b2b] h-full">
       <View className="flex items-center ">
         <View className="bg-[#3b3b3b] w-11/12 rounded-xl justify-between items-center flex flex-row p-2 m-3">
           <View className="flex flex-row">
@@ -59,14 +76,17 @@ const Home = () => {
           </View>
         </View>
       </View>
-      <ScrollView >
+      <ScrollView>
         <Image source={homeBanner} resizeMode="cover" className="w-full h-64" />
         <View className="p-4 bg-[#2b2b2b]   justify-center items-center">
-          <Text className="text-white text-2xl mr-2 font-semibold">Special Discount %</Text>
+          <Text className="text-white text-2xl mr-2 font-semibold">
+            Special Discount %
+          </Text>
         </View>
-        {restaurants.length > 0 ? (
+     <View className="max-h-72 bg-[#2b2b2b] justify-center items-center">
+         {restaurantData.length > 0 ? (
           <FlatList
-            data={restaurants}
+            data={restaurantData}
             renderItem={renderItem}
             horizontal
             scrollEnabled={true}
@@ -74,24 +94,28 @@ const Home = () => {
             contentContainerStyle={{ padding: 16 }}
           />
         ) : (
-          <ActivityIndicator size={20} animating color={"#fb9b33"}/>
+          <ActivityIndicator size={20} animating color={"#fb9b33"} />
         )}
+     </View>
         <View className="p-4 bg-[#2b2b2b]   justify-center items-center">
-          <Text className="text-white text-2xl mr-2 font-semibold">Our Restaurants</Text>
+          <Text className="text-white text-2xl mr-2 font-semibold">
+            Our Restaurants
+          </Text>
         </View>
-        {restaurants.length > 0 ? (
+         <View className="max-h-72 bg-[#2b2b2b] justify-center items-center">
+         {restaurantData.length > 0 ? (
           <FlatList
-            data={restaurants}
+            data={restaurantData}
             renderItem={renderItem}
             horizontal
             scrollEnabled={true}
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 106,paddingTop:16 }}
+            contentContainerStyle={{ padding: 16 }}
           />
         ) : (
-          <ActivityIndicator size={20} animating color={"#fb9b33"}/>
+          <ActivityIndicator size={20} animating color={"#fb9b33"} />
         )}
-      
+     </View>
       </ScrollView>
     </SafeAreaView>
   );
