@@ -8,13 +8,11 @@ const TabLayout = () => {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: Colors.PRIMARY,
-        tabBarInactiveTintColor: Colors.dark.text,
+        tabBarInactiveTintColor: "gray",
+        tabBarActiveBackgroundColor:"#332F2F",
         tabBarStyle: {
           backgroundColor: Colors.SECONDARY,
-          borderTopLeftRadius: 30,
-          borderTopRightRadius: 30,
-          paddingBottom: 15,
-          height: 70,
+          height: 65,
         },
         tabBarLabelStyle: {
           fontSize: 14,

@@ -16,9 +16,10 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.durga1997.my_restaurant_app"
     },
-     "web": {
+    "web": {
       "bundler": "metro"
     },
     "plugins": [
@@ -35,6 +36,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ce6b910b-fd78-47cc-affb-6b45c1c56b76"
+      }
     }
   }
 }

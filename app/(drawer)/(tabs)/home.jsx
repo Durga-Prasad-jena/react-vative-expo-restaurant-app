@@ -17,7 +17,6 @@ import { db } from "../../../config/firebaseConfig";
 
 const Home = () => {
   const [restaurantData, setREstaurantData] = useState([]);
-
   const getRestaurants = async () => {
     try {
       const q = query(collection(db, "restaurants"));
