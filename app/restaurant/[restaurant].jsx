@@ -23,7 +23,7 @@ const Restaurant = () => {
   const [selectedNumber, setSelectedNumber] = useState(0);
   const [restaurantDataItem, setRestaurantDataItem] = useState({});
   const [imageCarousel, setImageCarousel] = useState([]);
-  const [slots, setSlots] = useState({});
+  const [slotsData, setSlotsData] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [date, setDate] = useState(new Date());
   const [selectedSlot,setSelectedSlot]=useState(null)
@@ -77,7 +77,7 @@ const Restaurant = () => {
         slotSnapShot.forEach((slotItem) => {
           slotsSnap.push(slotItem.data());
         });
-        setSlots(slotsSnap);
+        setSlotsData(slotsSnap[0]?.slot);
       }
     } catch (error) {
       console.log(error);
@@ -87,13 +87,6 @@ const Restaurant = () => {
   useEffect(() => {
     getRestaurantsData();
   }, []);
-
-
-  useEffect(() => {
-     const carouselLength = imageCarousel[0]?.images.length;
-     
-  }, []);
-
   const handleNextImage = () => {
     const carouselLength = imageCarousel[0]?.images.length;
     if (currentIndex < carouselLength - 1) {
@@ -288,10 +281,11 @@ const Restaurant = () => {
         </View>
         <View className="flex-1">
            <FindSlot
-           slots={slots}
+           slots={slotsData}
            selectedSlot={selectedSlot}
            setSelectedSlot={setSelectedSlot}
-           
+           date={date}
+           selectedNumber={selectedNumber}
            />
         </View>
       </ScrollView>

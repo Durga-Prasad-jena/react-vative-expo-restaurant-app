@@ -1,6 +1,11 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { Formik } from "formik";
+import { useState } from "react";
 import {
+  Alert,
   Image,
   ScrollView,
   Text,
@@ -13,7 +18,49 @@ import dinetimelogo from "../../assets/images/dinetimelogo.png";
 import { authSchema } from "../../utils/authSchema";
 
 const Signin = () => {
-     const router = useRouter()
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const auth = getAuth();
+  const db = getFirestore();
+
+  const handleSignIn = async (values) => {
+    try {
+      setLoading(true);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password
+      );
+      const user = userCredential.user;
+      const userData = await getDoc(doc(db, "users", user.uid));
+      if (userData.exists) {
+        await AsyncStorage.setItem("userEmail", values.email);
+        router.push("/home");
+        setLoading(false);
+      } else {
+        console.log("error when signin");
+      }
+    } catch (error) {
+      setLoading(false);
+      if (error.code === "auth/invalid-credential") {
+        Alert.alert(
+          "Login-Failed!",
+          "Auth credential is wrong..please use different credential",
+          [{ text: "OK" }]
+        );
+      } else {
+        Alert.alert(
+          "Signin error",
+          "an unexpected error ..please signin later",
+          [
+            {
+              text: "OK",
+            },
+          ]
+        );
+      }
+    }
+  };
   return (
     <SafeAreaView className="bg-[#2b2b2b]">
       <ScrollView contentContainerStyle={{ height: "100%" }}>
@@ -28,6 +75,7 @@ const Signin = () => {
             <Formik
               initialValues={{ email: "", password: "" }}
               validationSchema={authSchema}
+              onSubmit={handleSignIn}
             >
               {({
                 handleBlur,
@@ -48,9 +96,12 @@ const Signin = () => {
                     value={values.email}
                     onBlur={handleBlur("email")}
                     placeholderTextColor="gray"
+                    style={{ color: "white" }}
                   />
                   {touched.email && errors.email && (
-                    <Text className=" text-red-500">{errors.email}</Text>
+                    <Text className=" text-red-500 text-lg mb-2">
+                      {errors.email}
+                    </Text>
                   )}
                   <Text className="test-base text-[#f49b33] mb-2 mt-4 ">
                     Password*
@@ -62,17 +113,26 @@ const Signin = () => {
                     value={values.password}
                     onBlur={handleBlur("password")}
                     placeholderTextColor="gray"
+                    style={{ color: "white" }}
                   />
                   {touched.password && errors.password && (
-                    <Text className=" text-red-500">{errors.password}</Text>
+                    <Text className=" text-red-500 text-lg mb-2">
+                      {errors.password}
+                    </Text>
                   )}
-                  <TouchableOpacity className="p-2 bg-[#f49b33] rounded-lg mt-10 justify-center items-center">
-                    <Text className="text-[#2b2b2b]">Sign in</Text>
+                  <TouchableOpacity
+                    onPress={handleSubmit}
+                    className="p-2 bg-[#f49b33] rounded-lg mt-10 justify-center items-center"
+                  >
+                    <Text className="text-[#2b2b2b]">
+                      {loading ? "Login..." : "Login"}
+                    </Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity 
-                  onPress={()=>router.push("/signup")}
-                  className="flex flex-row justify-center items-center mt-3">
+                  <TouchableOpacity
+                    onPress={() => router.push("/signup")}
+                    className="flex flex-row justify-center items-center mt-3"
+                  >
                     <Text className="text-white font-bold ">
                       Dont have an account?
                     </Text>
